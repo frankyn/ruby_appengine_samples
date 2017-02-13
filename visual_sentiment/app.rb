@@ -28,20 +28,16 @@ BucketName = "spec-test-ruby-samples"
 # Datastore Entity
 DatastoreEntity = "Faces"
 
-# Datastore Key
-DatastoreKey = "Face"
-
 # Handle GET requests for /
 get "/" do
   # Create a Cloud Datastore client
   datastore = Google::Cloud::Datastore.new project: GoogleCloudProject
 
   # Get a list of images with likelyhoods from Cloud Datastore
-  image_entries_key = datastore.key DatastoreEntity, DatastoreKey
+  query = Google::Cloud::Datastore::Query.new
+  query.kind DatastoreEntity
 
-  # Find all image entries
-  @image_entries = []
-  @image_entries ||= datastore.find_all image_entries_key
+  @image_entries = datastore.run query
 
   # Render index page
   haml :index
@@ -60,10 +56,10 @@ post "/upload_photo" do
   bucket = storage.bucket BucketName
 
   # Upload image
-  uploaded_image = bucket.create_file image.path, "images/#{image.name}"
+  uploaded_image = bucket.create_file image.path, "images/#{image_name}"
 
   # Make image public
-  uplaoded_image.acl.public!
+  uploaded_image.acl.public!
 
   # Create a Cloud Vision API client
   vision = Google::Cloud::Vision.new project: GoogleCloudProject
@@ -74,22 +70,24 @@ post "/upload_photo" do
   # Detect a face
   face = image_for_vision.face
 
-  # Likelyhood of joy
-  joy_likelyhood = face.likelihood.joy if face
+  if face
+    # Likelyhood of joy
+    joy_likelyhood = face.likelihood.joy.to_s 
 
-  # Create a Cloud Datastore client
-  datastore = Google::Cloud::Datastore.new project: GoogleCloudProject
+    # Create a Cloud Datastore client
+    datastore = Google::Cloud::Datastore.new project: GoogleCloudProject
 
-  # Create a new image entry
-  image_entry = datastore.entity DatastoreEntity, DatastoreKey do |t|
-    t["name"]         = image_name
-    t["joy"]          = joy_likelyhood
-    t["storage_path"] = uploaded_image.public_url
-    t["timestamp"]    = DateTime.now
+    # Create a new image entry
+    image_entry = datastore.entity DatastoreEntity do |entry|
+      entry["name"]         = image_name
+      entry["joy"]          = joy_likelyhood
+      entry["storage_path"] = uploaded_image.public_url
+      entry["timestamp"]    = DateTime.now
+    end
+
+    # Save entry in Datastore
+    datastore.save image_entry
   end
-
-  # Save entry in Datastore
-  datastore.save image_entry
 
   # Redirect back to index
   redirect to("/")
@@ -114,10 +112,10 @@ __END__
       %input(type="file" name="file")
       %br/
       %input(type="submit" name="submit" value="Submit")
+
     - if @image_entries
       - @image_entries.each do |image_entry|
-        %p %image_entry.name
-        %p %image_tag image_entry.storage_path
-        %p %image_entry.joy
-
+        %p
+          %img{src: image_entry["storage_path"]}
+        %p="Joy Factor: #{image_entry["joy"]}"
 
