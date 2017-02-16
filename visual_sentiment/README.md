@@ -63,6 +63,6 @@ After you have setup your environment you can begin using this sample.
 
 ## Deploy the sample to App Engine
 
-1. gcloud app deploy
+1. `gcloud app deploy`
 
 
