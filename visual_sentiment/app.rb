@@ -20,10 +20,10 @@ require "google/cloud/storage"
 require "google/cloud/datastore"
 
 # project id
-GoogleCloudProject = "spec-test-ruby-samples"
+GoogleCloudProject = "your-project-id"
 
 # storage bucket
-BucketName = "spec-test-ruby-samples"
+BucketName = "your-bucket-name"
 
 # Datastore Entity
 DatastoreEntity = "Faces"
