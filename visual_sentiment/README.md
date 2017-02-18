@@ -82,7 +82,7 @@ Run the following command to clone the Github repository:
 Change directory to the sample code location:
 
 ```
-    cd visual_sentiment
+    cd ruby_appengine_samples/visual_sentiment
 ```
 
 ## Authentication
