@@ -19,23 +19,20 @@ require "google/cloud/vision"
 require "google/cloud/storage"
 require "google/cloud/datastore"
 
-# project id
-GoogleCloudProject = "your-project-id"
-
 # storage bucket
-BucketName = "your-bucket-name"
+BucketName = ENV["CLOUD_STORAGE_BUCKET"]
 
-# Datastore Entity
-DatastoreEntity = "Faces"
+# Datastore Kind
+DatastoreKind = "Faces"
 
 # Handle GET requests for /
 get "/" do
   # Create a Cloud Datastore client
-  datastore = Google::Cloud::Datastore.new project: GoogleCloudProject
+  datastore = Google::Cloud::Datastore.new
 
   # Get a list of images with likelyhoods from Cloud Datastore
   query = Google::Cloud::Datastore::Query.new
-  query.kind DatastoreEntity
+  query.kind DatastoreKind
 
   @image_entries = datastore.run query
 
@@ -50,8 +47,7 @@ post "/upload_photo" do
   image_name = params[:file][:filename]
 
   # Create a Cloud Storage client
-  storage = Google::Cloud::Storage.new project: GoogleCloudProject
-
+  storage = Google::Cloud::Storage.new
   # Get bucket where image will be stored
   bucket = storage.bucket BucketName
 
@@ -62,7 +58,7 @@ post "/upload_photo" do
   uploaded_image.acl.public!
 
   # Create a Cloud Vision API client
-  vision = Google::Cloud::Vision.new project: GoogleCloudProject
+  vision = Google::Cloud::Vision.new
 
   # Prepare image vision
   image_for_vision = vision.image image
@@ -70,15 +66,17 @@ post "/upload_photo" do
   # Detect a face
   face = image_for_vision.face
 
+  # Only save image if it has a face
   if face
-    # Likelyhood of joy
-    joy_likelyhood = face.likelihood.joy.to_s 
+    # Using the Vision API we can detect the Likelyhood of joy
+    # and then convert into a string using `.to_s` to be saved.
+    joy_likelyhood = face.likelihood.joy.to_s
 
     # Create a Cloud Datastore client
-    datastore = Google::Cloud::Datastore.new project: GoogleCloudProject
+    datastore = Google::Cloud::Datastore.new
 
     # Create a new image entry
-    image_entry = datastore.entity DatastoreEntity do |entry|
+    image_entry = datastore.entity DatastoreKind do |entry|
       entry["name"]         = image_name
       entry["joy"]          = joy_likelyhood
       entry["storage_path"] = uploaded_image.public_url
