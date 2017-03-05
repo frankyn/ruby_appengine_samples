@@ -1,4 +1,4 @@
-# Ruby Appengine
+# Ruby App Engine
 
 App Engine centric Ruby samples
 
