@@ -1,4 +1,4 @@
-# App Engine and Machine Learning APIS
+# App Engine and Machine Learning API
 
 This is a sample demonstrating how to use App Engine, Datastore, Storage and the
 Vision API in Ruby.
