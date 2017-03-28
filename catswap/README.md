@@ -3,14 +3,13 @@
 This is a sample demonstrating how to use App Engine, Datastore, Storage and the
 Vision API in Ruby.
 
-## Overview of the sample
+## Overview of CatSwap
 
-In this sample app, you will learn how what it takes to generate an app that
-uses the [Machine Learning Vision API](https://cloud.google.com/vision/) to
-understand if a persons face is joyful! The sample also uses [Cloud Datastore](https://cloud.google.com/datastore/) to
-save metadata for each image and [Cloud Storage](https://cloud.google.com/storage/) to
-save images to be displayed later.
-
+CatSwaps objective is to Catify a human face. CatSwap uses the
+[Cloud Vision API](https://cloud.google.com/vision/) to find a human face.
+Then the catified face is stored in [Cloud Storage](https://cloud.google.com/storage/)
+and stores metadata in [Cloud Datastore](https://cloud.google.com/datastore).
+Catified images are listed on the home page of this app for all to enjoy.
 
 ## Ruby Environment Setup
 
@@ -82,7 +81,7 @@ Run the following command to clone the Github repository:
 Change directory to the sample code location:
 
 ```
-    cd ruby_appengine_samples/visual_sentiment
+    cd ruby_appengine_samples/catswap
 ```
 
 ## Authentication
