@@ -20,13 +20,11 @@ require "google/cloud/storage"
 require "google/cloud/datastore"
 require "rmagick"
 
-GOOGLE_CLOUD_PROJECT = "spec-test-ruby-samples"
-
-STORAGE_BUCKET_NAME = "spec-test-ruby-samples"
+STORAGE_BUCKET_NAME = ENV["CLOUD_STORAGE_BUCKET"] 
 
 DATASTORE_KIND = "Faces"
 
-CAT_IMAGE = "images/cat.png"
+CAT_IMAGE = "images/cat_face.png"
 
 def bounding_dimensions top_right:, top_left:, bottom_left:
     # Euclidean Distance between the top bound verteces
@@ -42,7 +40,7 @@ end
 # Handle GET requests for /
 get "/" do
   # Create a Cloud Datastore client
-  datastore = Google::Cloud::Datastore.new project: GOOGLE_CLOUD_PROJECT
+  datastore = Google::Cloud::Datastore.new
 
   # Get a list of images with likelyhoods from Cloud Datastore
   query = Google::Cloud::Datastore::Query.new
@@ -61,7 +59,7 @@ post "/upload_photo" do
   image_name = params[:file][:filename]
 
   # Create a Cloud Vision API client
-  vision = Google::Cloud::Vision.new project: GOOGLE_CLOUD_PROJECT
+  vision = Google::Cloud::Vision.new
 
   # Prepare image vision
   image_for_vision = vision.image image
@@ -72,8 +70,8 @@ post "/upload_photo" do
   if face
     # Found a face to swap!
     # Load human and cat faces
-    human_face_image = Magick::Image.read(image).first
-    cat_face_image   = Magick::Image.read(CAT_IMAGE).first
+    human_image = Magick::Image.read(image.path).first
+    cat_image   = Magick::Image.read(CAT_IMAGE).first
 
 		# Resize cat_face to fit human face bounding box
 		# Face bounding box
@@ -88,18 +86,18 @@ post "/upload_photo" do
 		new_dimensions = bounding_dimensions(top_right: human_top_right,
         top_left: human_top_left, bottom_left: human_bottom_left)
 
-		# Resize cat_face_image
-    cat_face_image.resize! new_dimensions[0], new_dimensions[1] 
+		# Resize cat_image
+    cat_image.resize! new_dimensions[0], new_dimensions[1] 
 
 		# Create a composite image of the human and cat faces
-    human_face_image.composite!(cat_face_image, human_top_left[:x],
+    human_image.composite!(cat_image, human_top_left[:x],
         human_top_left[:y], Magick::OverCompositeOp)
 
 		# Save the composite image to rendered_face path
-    human_face_image.write rendered_face_filename
+    human_image.write image.path 
 
-        # Create a Cloud Storage client
-    storage = Google::Cloud::Storage.new project: GOOGLE_CLOUD_PROJECT
+    # Create a Cloud Storage client
+    storage = Google::Cloud::Storage.new
 
     # Get bucket where image will be stored
     bucket = storage.bucket STORAGE_BUCKET_NAME
@@ -111,7 +109,7 @@ post "/upload_photo" do
     uploaded_image.acl.public!
 
     # Create a Cloud Datastore client
-    datastore = Google::Cloud::Datastore.new project: GOOGLE_CLOUD_PROJECT
+    datastore = Google::Cloud::Datastore.new
 
     # Create a new image entry
     image_entry = datastore.entity DATASTORE_KIND do |entry|

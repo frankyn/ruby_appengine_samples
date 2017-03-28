@@ -1,4 +1,4 @@
-# App Engine and Machine Learning API
+# CatSwap 
 
 This is a sample demonstrating how to use App Engine, Datastore, Storage and the
 Vision API in Ruby.
@@ -97,15 +97,15 @@ Enable the APIs using the `gcloud` tool:
 Create a Service Account to access the Google Cloud APIs when testing locally:
 
 ```
-    gcloud iam service-accounts create hackathon \
-    --display-name "My Hackathon Service Account"
+    gcloud iam service-accounts create catswap \
+    --display-name "My CatSwap Service Account"
 ```
 
 Give your newly created Service Account appropriate permissions:
 
 ```
     gcloud projects add-iam-policy-binding ${GOOGLE_CLOUD_PROJECT} \
-    --member serviceAccount:hackathon@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com \
+    --member serviceAccount:catswap@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com \
     --role roles/owner
 ```
 
@@ -113,7 +113,7 @@ After creating your Service Account, create a Service Account key:
 
 ```
     gcloud iam service-accounts keys create ~/key.json --iam-account \
-    hackathon@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
+    catswap@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
 ```
 
 Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to where
@@ -159,5 +159,10 @@ take several minutes.
     gcloud app deploy
 ```
 
-Visit `https://[GOOGLE_CLOUD_PROJECT].appspot.com` to view your deployed application.
+Visit `https://[GOOGLE_CLOUD_PROJECT].appspot.com` to view your deployed
+application or use the following command:
+
+```
+    gcloud app browse
+```
 
