@@ -6,10 +6,10 @@ Vision API in Ruby.
 ## Overview of the sample
 
 In this sample app, you will learn how what it takes to generate an app that
-uses the [Machine Learning Vision API](https://cloud.google.com/vision/) to
-understand if a persons face is joyful! The sample also uses [Cloud Datastore](https://cloud.google.com/datastore/) to
-save metadata for each image and [Cloud Storage](https://cloud.google.com/storage/) to
-save images to be displayed later.
+uses the [Cloud Vision API](https://cloud.google.com/vision/) to understand if
+a persons face is joyful! The sample also uses [Cloud Datastore](https://cloud.google.com/datastore/)
+to save metadata for each image and [Cloud Storage](https://cloud.google.com/storage/)
+to save images to be displayed later.
 
 
 ## Ruby Environment Setup
